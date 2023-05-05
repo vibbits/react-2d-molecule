@@ -2,9 +2,9 @@
  * Tests for the Molecule component
  */
 
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, test, jest } from "@jest/globals";
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 
 import type { MoleculeData } from "../src/index";
 import { Molecule } from "../src/index";
@@ -35,7 +35,7 @@ describe("Molecule component", () => {
     const { container } = render(<Molecule molecule={data} />);
 
     // carbon atom labels should not be displayed
-    expect(screen.queryAllByText("C")).toStrictEqual([]);
+    expect(screen.queryAllByText("C")).toHaveLength(2);
 
     // The line
     expect(container.querySelector("line")).not.toBeNull();
@@ -94,7 +94,7 @@ describe("Molecule component", () => {
 
     // atom labels should  displayed
     expect(screen.queryByText("Cl")).not.toBeNull();
-    expect(screen.queryByText("C")).toBeNull();
+    expect(screen.queryByText("C")).not.toBeNull();
 
     // The polygon
     expect(container.querySelector("polygon")).not.toBeNull();
@@ -134,7 +134,7 @@ describe("Molecule component", () => {
 
     // atom labels should  displayed
     expect(screen.queryByText("Cl")).not.toBeNull();
-    expect(screen.queryByText("C")).toBeNull();
+    expect(screen.queryByText("C")).not.toBeNull();
 
     // The polygon
     expect(container.querySelectorAll("line")).toHaveLength(6);
@@ -158,5 +158,22 @@ describe("Molecule component", () => {
 
     // The unimplemented label
     expect(screen.queryByText("?unimplemented?")).not.toBeNull();
+  });
+
+  test("Carbons respond to button clicks", () => {
+    const onClick = jest.fn();
+    const data: MoleculeData = {
+      width: 10,
+      height: 10,
+      atoms: [{ x: 0, y: 0, element: "C" }],
+      bonds: [],
+    };
+    render(<Molecule molecule={data} atomClicked={onClick} />);
+
+    fireEvent.click(screen.getByText("C"));
+
+    // atom labels should  displayed, C should be clicked
+    expect(screen.queryByText("C")).not.toBeNull();
+    expect(onClick).toHaveBeenCalledTimes(1);
   });
 });

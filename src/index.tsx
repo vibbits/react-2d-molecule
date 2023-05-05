@@ -229,9 +229,12 @@ type MoleculeProps = {
   translateX?: number;
   translateY?: number;
   scale?: number;
-  atomClicked?: (index: number) => void;
-  atomStyle?: (element: string, selected: boolean) => React.CSSProperties;
-  atomLabelStyle?: (element: string, selected: boolean) => React.CSSProperties;
+  atomClicked?: (_index: number) => void;
+  atomStyle?: (_element: string, _selected: boolean) => React.CSSProperties;
+  atomLabelStyle?: (
+    _element: string,
+    _selected: boolean,
+  ) => React.CSSProperties;
 };
 
 export const Molecule: React.FC<MoleculeProps> = (props: MoleculeProps) => {
