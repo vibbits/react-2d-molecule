@@ -31,11 +31,11 @@ const mol = {
   "width": 3.0,
   "height": 3.0,
   "atoms": [
-    {"x": 1.5, "y": -0.0, "element": "H"},
+    {"x": 1.5, "y": 0.0, "element": "H"},
     {"x": -1.5, "y": 0.0, "element": "H"},
     {"x": 0.0, "y": 1.5, "element": "H"},
-    {"x": 0.0, "y": -0.0, "element": "C"},
-    {"x": -0.0, "y": -1.5, "element": "H"}
+    {"x": 0.0, "y": 0.0, "element": "C"},
+    {"x": 0.0, "y": -1.5, "element": "H"}
   ],
   "bonds": 
     {"source": 3, "sink": 0, "bond": "SINGLE"},
@@ -56,12 +56,12 @@ export const ViewAMolecule = () => <Molecule molecule={mol} />;
 
 ### Optional
 
-* `translateX` Translate the whole image on the X axis (default: `0`).
-* `translateY` Translate the whole image on the Y axis (default: `0`).
-* `scale` Scale the whole image by some fraction (default: `1`).
-* `atomClicked` A callback function accepting the index of the clicked atom.
-* `atomStyle` A hook specifying CSS styles for the SVG `<circle>`.
-* `atomLabelStyle` A hook specifying CSS styles for the SVG `<text>`.
+* `translateX: number` Translate the whole image on the X axis (default: `0`).
+* `translateY: number` Translate the whole image on the Y axis (default: `0`).
+* `scale: number` Scale the whole image by some fraction (default: `1`).
+* `atomClicked: (index: number) => void` A callback function accepting the index of the clicked atom.
+* `atomStyle: (element: string, selected: boolean): React.CSSProperties` A hook specifying CSS styles for the SVG `<circle>`.
+* `atomLabelStyle: (element: string, selected: boolean): React.CSSProperties` A hook specifying CSS styles for the SVG `<text>`.
 
 ## Contributing
 

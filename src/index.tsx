@@ -279,14 +279,6 @@ export const Molecule: React.FC<MoleculeProps> = (props: MoleculeProps) => {
       )}`}
       style={{ pointerEvents: "none" }}
     >
-      <defs>
-        <pattern id="dashes" patternUnits="userSpaceOnUse" width="4" height="4">
-          <path d="M-1 1 1-1M0 4 4 0M3 5 5 3" />
-        </pattern>
-        <mask id="dashes-mask">
-          <rect height="100%" width="100%" style={{ fill: "url(#dashes)" }} />
-        </mask>
-      </defs>
       <g
         transform={`translate(${translateX}, ${translateY}) scale(${
           props.scale || 1
