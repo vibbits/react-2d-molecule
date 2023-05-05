@@ -1,0 +1,7 @@
+*~
+.github/
+.git/
+src/
+example/
+renovate.json
+test/
