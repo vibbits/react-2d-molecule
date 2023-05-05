@@ -1,3 +1,6 @@
+![Tests](https://github.com/vibbits/react-2d-molecule/actions/workflows/test.yml/badge.svg)
+![NPM](https://img.shields.io/npm/v/@vibbioinfocore/react-2d-molecule)
+
 # react-2d-molecule
 
 `@vibbioinfocore/react-2d-molecule` is a React component to display molecule structures in a 2D SVG.
