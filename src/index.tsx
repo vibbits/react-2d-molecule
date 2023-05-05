@@ -272,65 +272,53 @@ export const Molecule: React.FC<MoleculeProps> = (props: MoleculeProps) => {
   const atomLabelStyle = props.atomLabelStyle ?? defaultAtomLabelStyle;
 
   return (
-    <div
-      style={{
-        fontSize: "0.7px",
-        fontFamily: "sans-serif",
-      }}
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox={`0 0 ${Math.ceil(props.molecule.width)} ${Math.ceil(
+        props.molecule.height,
+      )}`}
+      style={{ pointerEvents: "none" }}
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox={`0 0 ${Math.ceil(props.molecule.width)} ${Math.ceil(
-          props.molecule.height,
-        )}`}
-        style={{ pointerEvents: "none" }}
+      <defs>
+        <pattern id="dashes" patternUnits="userSpaceOnUse" width="4" height="4">
+          <path d="M-1 1 1-1M0 4 4 0M3 5 5 3" />
+        </pattern>
+        <mask id="dashes-mask">
+          <rect height="100%" width="100%" style={{ fill: "url(#dashes)" }} />
+        </mask>
+      </defs>
+      <g
+        transform={`translate(${translateX}, ${translateY}) scale(${
+          props.scale || 1
+        } ${props.scale || 1})`}
       >
-        <defs>
-          <pattern
-            id="dashes"
-            patternUnits="userSpaceOnUse"
-            width="4"
-            height="4"
+        <Bonds molecule={props.molecule} />
+        {props.molecule.atoms.map((atom: Atom, i: number) => (
+          <g
+            key={`atom-${i}`}
+            onClick={() => atomClicked(i)}
+            style={{ pointerEvents: "visiblePainted", cursor: "crosshair" }}
           >
-            <path d="M-1 1 1-1M0 4 4 0M3 5 5 3" />
-          </pattern>
-          <mask id="dashes-mask">
-            <rect height="100%" width="100%" style={{ fill: "url(#dashes)" }} />
-          </mask>
-        </defs>
-        <g
-          transform={`translate(${translateX}, ${translateY}) scale(${
-            props.scale || 1
-          } ${props.scale || 1})`}
-        >
-          <Bonds molecule={props.molecule} />
-          {props.molecule.atoms.map((atom: Atom, i: number) => (
-            <g
-              key={`atom-${i}`}
-              onClick={() => atomClicked(i)}
-              style={{ pointerEvents: "visiblePainted", cursor: "crosshair" }}
+            <circle
+              key={i}
+              cx={atom.x}
+              cy={atom.y}
+              r={0.3}
+              strokeWidth="0.02"
+              style={atomStyle(atom.element, !!atom.selected)}
+            />
+            <text
+              key={`label-${i}`}
+              x={atom.x}
+              y={atom.y + 0.25}
+              textAnchor="middle"
+              style={atomLabelStyle(atom.element, !!atom.selected)}
             >
-              <circle
-                key={i}
-                cx={atom.x}
-                cy={atom.y}
-                r={0.3}
-                strokeWidth="0.02"
-                style={atomStyle(atom.element, !!atom.selected)}
-              />
-              <text
-                key={`label-${i}`}
-                x={atom.x}
-                y={atom.y + 0.25}
-                textAnchor="middle"
-                style={atomLabelStyle(atom.element, !!atom.selected)}
-              >
-                {atom.element}
-              </text>
-            </g>
-          ))}
-        </g>
-      </svg>
-    </div>
+              {atom.element}
+            </text>
+          </g>
+        ))}
+      </g>
+    </svg>
   );
 };
