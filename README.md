@@ -42,7 +42,7 @@ const mol = {
   ]
 };
 
-export ViewAMolecule = () => <Molecule molecule={mol} />;
+export const ViewAMolecule = () => <Molecule molecule={mol} />;
 ```
 
 ## Component Attributes
