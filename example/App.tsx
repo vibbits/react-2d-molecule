@@ -92,7 +92,6 @@ const DisplayMolecule: React.FC<{ data: MoleculeData }> = ({ data }) => {
         onPointerDown={() => setMayTranslate(true)}
         onPointerUp={() => setMayTranslate(false)}
         style={{
-          width: "90%",
           fontSize: "0.7px",
           fontFamily: "sans-serif",
           border: "1px solid red",
@@ -111,7 +110,6 @@ const DisplayMolecule: React.FC<{ data: MoleculeData }> = ({ data }) => {
       <h3>Non-interactive</h3>
       <div
         style={{
-          width: "90%",
           fontSize: "0.65px",
           fontFamily: "sans-serif",
           border: "1px solid blue",
