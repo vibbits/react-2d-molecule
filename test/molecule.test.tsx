@@ -30,7 +30,7 @@ describe("Molecule component", () => {
         { x: 0, y: 0, element: "C" },
         { x: 10, y: 10, element: "C" },
       ],
-      bonds: [{ source: 0, sink: 1, bond: "SINGLE" }],
+      bonds: [{ atoms: [0, 1], bond: "SINGLE" }],
     };
     const { container } = render(<Molecule molecule={data} />);
 
@@ -49,7 +49,7 @@ describe("Molecule component", () => {
         { x: 0, y: 0, element: "Cl" },
         { x: 10, y: 10, element: "Cl" },
       ],
-      bonds: [{ source: 0, sink: 1, bond: "DOUBLE" }],
+      bonds: [{ atoms: [0, 1], bond: "DOUBLE" }],
     };
     const { container } = render(<Molecule molecule={data} />);
 
@@ -68,7 +68,7 @@ describe("Molecule component", () => {
         { x: 0, y: 0, element: "Cl" },
         { x: 10, y: 10, element: "H" },
       ],
-      bonds: [{ source: 0, sink: 1, bond: "SINGLE", direction: "BEGINWEDGE" }],
+      bonds: [{ atoms: [0, 1], bond: "SINGLE", direction: "BEGINWEDGE" }],
     };
     const { container } = render(<Molecule molecule={data} />);
 
@@ -88,7 +88,7 @@ describe("Molecule component", () => {
         { x: 0, y: 0, element: "Cl" },
         { x: 10, y: 10, element: "C" },
       ],
-      bonds: [{ source: 0, sink: 1, bond: "SINGLE", direction: "BEGINWEDGE" }],
+      bonds: [{ atoms: [0, 1], bond: "SINGLE", direction: "BEGINWEDGE" }],
     };
     const { container } = render(<Molecule molecule={data} />);
 
@@ -108,7 +108,7 @@ describe("Molecule component", () => {
         { x: 0, y: 0, element: "Cl" },
         { x: 5, y: 5, element: "H" },
       ],
-      bonds: [{ source: 0, sink: 1, bond: "SINGLE", direction: "BEGINDASH" }],
+      bonds: [{ atoms: [0, 1], bond: "SINGLE", direction: "BEGINDASH" }],
     };
     const { container } = render(<Molecule molecule={data} />);
 
@@ -128,7 +128,7 @@ describe("Molecule component", () => {
         { x: 0, y: 0, element: "Cl" },
         { x: 5, y: 5, element: "C" },
       ],
-      bonds: [{ source: 0, sink: 1, bond: "SINGLE", direction: "BEGINDASH" }],
+      bonds: [{ atoms: [0, 1], bond: "SINGLE", direction: "BEGINDASH" }],
     };
     const { container } = render(<Molecule molecule={data} />);
 
@@ -140,6 +140,43 @@ describe("Molecule component", () => {
     expect(container.querySelectorAll("line")).toHaveLength(6);
   });
 
+  test("Display aromatic ring", () => {
+    const data: MoleculeData = {
+      width: 10,
+      height: 10,
+      atoms: [
+        { x: 1, y: 0, element: "F" },
+        { x: 2, y: 1, element: "F" },
+        { x: 2, y: 2, element: "F" },
+        { x: 1, y: 3, element: "F" },
+        { x: 0, y: 2, element: "F" },
+        { x: 0, y: 1, element: "F" },
+      ],
+      bonds: [{ atoms: [0, 1, 2, 3, 4, 5], bond: "AROMATIC" }],
+    };
+    const { container } = render(<Molecule molecule={data} />);
+
+    // atom labels should  displayed
+    expect(screen.queryAllByText("F")).toHaveLength(6);
+
+    // The polygon
+    expect(container.querySelectorAll("line")).toHaveLength(9);
+  });
+
+  test("Empty aromatic ring", () => {
+    const data: MoleculeData = {
+      width: 10,
+      height: 10,
+      atoms: [{ x: 5, y: 5, element: "A" }],
+      bonds: [{ atoms: [], bond: "AROMATIC" }],
+    };
+
+    const { container } = render(<Molecule molecule={data} />);
+
+    expect(screen.queryAllByText("A")).toHaveLength(1);
+    expect(container.querySelectorAll("line")).toHaveLength(0);
+  });
+
   test("Display an unimplemented bond type", () => {
     const data: MoleculeData = {
       width: 10,
@@ -148,7 +185,7 @@ describe("Molecule component", () => {
         { x: 0, y: 0, element: "Cl" },
         { x: 5, y: 5, element: "H" },
       ],
-      bonds: [{ source: 0, sink: 1, bond: "UNSPECIFIED" }],
+      bonds: [{ atoms: [0, 1], bond: "UNSPECIFIED" }],
     };
     render(<Molecule molecule={data} />);
 
@@ -157,7 +194,7 @@ describe("Molecule component", () => {
     expect(screen.queryByText("H")).not.toBeNull();
 
     // The unimplemented label
-    expect(screen.queryByText("?unimplemented?")).not.toBeNull();
+    expect(screen.queryByText("?UNSPECIFIED-?")).not.toBeNull();
   });
 
   test("Carbons respond to button clicks", () => {
