@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2023-06-05
+
+### Added
+
+- Support more bond types.
+- Change input structure to allow easily rendering aromatic rings.
+
+### Fixed
+
+- Correctly output .d.ts for typescript.
+
 ## [1.0.2] - 2023-05-05
 
 ### Removed

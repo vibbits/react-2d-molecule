@@ -1,15 +1,17 @@
 {
   "name": "@vibbioinfocore/react-2d-molecule",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "A React component to display molecule structures in a 2D SVG",
   "browser": "dist/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
     "start": "npm run build && cd example && npm install && npm start",
     "build": "esbuild src/index.tsx --bundle --minify --sourcemap --format=esm --outdir=dist --allow-overwrite",
-    "postbuild": "tsc --emitDeclarationOnly --declaration --outFile dist/index.d.ts --jsx react --esModuleInterop src/index.tsx",
+    "postbuild": "tsc",
     "check": "tsc --noEmit --skipLibCheck && eslint 'src/**/*.ts' 'src/**/*.tsx'",
     "check:formatting": "prettier --check src/**/*.ts src/**/*.tsx"
   },
@@ -39,8 +41,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^18.2.0"
   },
   "prettier": {
     "trailingComma": "all"

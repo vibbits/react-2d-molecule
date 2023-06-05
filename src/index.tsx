@@ -35,8 +35,7 @@ type BondDirection =
   | "UNKNOWN";
 
 type Bond = {
-  source: number;
-  sink: number;
+  atoms: number[];
   bond: BondVariant;
   direction?: BondDirection;
 };
@@ -159,15 +158,79 @@ const Dash: React.FC<{ bond: string; source: Atom; sink: Atom }> = ({
   return <g>{lines}</g>;
 };
 
-const UnimplementedBond: React.FC<{ source: Atom; sink: Atom }> = ({
+const InsetBond: React.FC<{ source: Atom; sink: Atom; centre: V.Vector }> = ({
   source,
   sink,
+  centre,
 }) => {
-  const x = (sink.x - source.x) / 2;
-  const y = (sink.y - source.y) / 2;
+  const a = V.add(source, V.scale(V.sub(centre, source), 0.1));
+  const b = V.add(sink, V.scale(V.sub(centre, sink), 0.1));
   return (
-    <text x={x} y={y} textAnchor="middle" style={{ fontSize: "0.1px" }}>
-      ?unimplemented?
+    <line
+      x1={a.x}
+      x2={b.x}
+      y1={a.y}
+      y2={b.y}
+      stroke="black"
+      strokeWidth="0.05"
+    />
+  );
+};
+
+const Aromatic: React.FC<{ bond: string; atoms: Atom[] }> = ({
+  bond,
+  atoms,
+}) => {
+  // rotate atoms left then zip
+  const rotateLeft: <T>(xs: Array<T>) => Array<T> = (xs) => {
+    if (xs.length > 0) {
+      let xs2 = xs.slice();
+      xs2.push(xs2.shift()!);
+      return xs2;
+    } else {
+      return xs;
+    }
+  };
+
+  return (
+    <g>
+      {rotateLeft(atoms).map((atom, i) => {
+        if (i % 2 == 0) {
+          return (
+            <g key={`${bond}-${i}`}>
+              <SingleBond source={atoms[i]!} sink={atom} />
+              <InsetBond
+                source={atoms[i]!}
+                sink={atom}
+                centre={V.mean(atoms)}
+              />
+            </g>
+          );
+        } else {
+          return (
+            <SingleBond key={`${bond}-${i}`} source={atoms[i]!} sink={atom} />
+          );
+        }
+      })}
+    </g>
+  );
+};
+
+const UnimplementedBond: React.FC<{
+  source: Atom;
+  sink: Atom;
+  name: string;
+}> = ({ source, sink, name }) => {
+  const x = (sink.x + source.x) / 2;
+  const y = (sink.y + source.y) / 2;
+  return (
+    <text
+      x={x}
+      y={y}
+      textAnchor="middle"
+      style={{ fontSize: "0.1px", color: "red" }}
+    >
+      {`?${name}?`}
     </text>
   );
 };
@@ -176,21 +239,24 @@ const Bonds: React.FC<{ molecule: MoleculeData }> = ({ molecule }) => {
   return (
     <>
       {molecule.bonds.map((bond: Bond, i: number) => {
-        switch (`${bond.bond}-${bond.direction}`) {
-          case "SINGLE-undefined":
+        const descr = `${bond.bond}-${bond.direction ? bond.direction : ""}`;
+        switch (descr) {
+          case "SINGLE-":
+          case "SINGLE-ENDUPRIGHT":
+          case "SINGLE-ENDDOWNRIGHT":
             return (
               <SingleBond
                 key={`singlebond-${i}`}
-                source={molecule.atoms[bond.source] as Atom}
-                sink={molecule.atoms[bond.sink] as Atom}
+                source={molecule.atoms[bond.atoms[0]!] as Atom}
+                sink={molecule.atoms[bond.atoms[1]!] as Atom}
               />
             );
           case "SINGLE-BEGINWEDGE":
             return (
               <Wedge
                 key={`wedge${i}`}
-                source={molecule.atoms[bond.source] as Atom}
-                sink={molecule.atoms[bond.sink] as Atom}
+                source={molecule.atoms[bond.atoms[0]!] as Atom}
+                sink={molecule.atoms[bond.atoms[1]!] as Atom}
               />
             );
           case "SINGLE-BEGINDASH":
@@ -198,24 +264,33 @@ const Bonds: React.FC<{ molecule: MoleculeData }> = ({ molecule }) => {
               <Dash
                 key={`dash-${i}`}
                 bond={`dash-${i}`}
-                source={molecule.atoms[bond.source] as Atom}
-                sink={molecule.atoms[bond.sink] as Atom}
+                source={molecule.atoms[bond.atoms[0]!] as Atom}
+                sink={molecule.atoms[bond.atoms[1]!] as Atom}
               />
             );
-          case "DOUBLE-undefined":
+          case "DOUBLE-":
             return (
               <DoubleBond
                 key={`doublebond-${i}`}
-                source={molecule.atoms[bond.source] as Atom}
-                sink={molecule.atoms[bond.sink] as Atom}
+                source={molecule.atoms[bond.atoms[0]!] as Atom}
+                sink={molecule.atoms[bond.atoms[1]!] as Atom}
+              />
+            );
+          case "AROMATIC-":
+            return (
+              <Aromatic
+                key={`aromatic-${i}`}
+                bond={`aromatic-${i}`}
+                atoms={bond.atoms.map((i) => molecule.atoms[i] as Atom)}
               />
             );
           default:
             return (
               <UnimplementedBond
                 key={`unimplbond-${i}`}
-                source={molecule.atoms[bond.source] as Atom}
-                sink={molecule.atoms[bond.sink] as Atom}
+                source={molecule.atoms[bond.atoms[0]!] as Atom}
+                sink={molecule.atoms[bond.atoms[1]!] as Atom}
+                name={descr}
               />
             );
         }
@@ -224,11 +299,15 @@ const Bonds: React.FC<{ molecule: MoleculeData }> = ({ molecule }) => {
   );
 };
 
+const ATOM_RADIUS: number = 0.3;
+
 type MoleculeProps = {
   molecule: MoleculeData;
   translateX?: number;
   translateY?: number;
   scale?: number;
+  labelTranslateX?: number;
+  labelTranslateY?: number;
   atomClicked?: (_index: number) => void;
   atomStyle?: (_element: string, _selected: boolean) => React.CSSProperties;
   atomLabelStyle?: (
@@ -246,9 +325,13 @@ export const Molecule: React.FC<MoleculeProps> = (props: MoleculeProps) => {
     .reduce((acc: number, v: number) => Math.min(acc, v), Infinity);
 
   const translateX =
-    -Math.min(min_x, 0) + 0.3 + (props.translateX || 0) * props.molecule.width;
+    -Math.min(min_x, 0) +
+    //ATOM_RADIUS +
+    (props.translateX || 0) * props.molecule.width;
   const translateY =
-    -Math.min(min_y, 0) + 0.3 + (props.translateY || 0) * props.molecule.height;
+    -Math.min(min_y, 0) +
+    //ATOM_RADIUS +
+    (props.translateY || 0) * props.molecule.height;
 
   const defaultAtomStyle = (
     element: string,
@@ -295,14 +378,14 @@ export const Molecule: React.FC<MoleculeProps> = (props: MoleculeProps) => {
               key={i}
               cx={atom.x}
               cy={atom.y}
-              r={0.3}
+              r={ATOM_RADIUS}
               strokeWidth="0.02"
               style={atomStyle(atom.element, !!atom.selected)}
             />
             <text
               key={`label-${i}`}
-              x={atom.x}
-              y={atom.y + 0.25}
+              x={atom.x + (props.labelTranslateX || 0)}
+              y={atom.y + (props.labelTranslateY || 0.25)}
               textAnchor="middle"
               style={atomLabelStyle(atom.element, !!atom.selected)}
             >

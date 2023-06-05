@@ -21,3 +21,8 @@ export const scale = (a: Vector, f: number): Vector => ({
 });
 
 export const length = (a: Vector): number => Math.sqrt(a.x * a.x + a.y * a.y);
+
+export const unit = (a: Vector): Vector => scale(a, 1 / length(a));
+
+export const mean = (vs: Vector[]): Vector =>
+  scale(vs.reduce(add, { x: 0, y: 0 }), 1 / vs.length);
