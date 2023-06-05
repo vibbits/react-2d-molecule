@@ -27,26 +27,54 @@ yarn add @vibbioinfocore/react-2d-molecule
 import React from 'react';
 import { Molecule } from '@vibbioinfocore/react-2d-molecule';
 
+// Biphenylene
 const mol = {
-  "width": 3.0,
-  "height": 3.0,
+  "width": 9.294,
+  "height": 6.0,
   "atoms": [
-    {"x": 1.5, "y": 0.0, "element": "H"},
-    {"x": -1.5, "y": 0.0, "element": "H"},
-    {"x": 0.0, "y": 1.5, "element": "H"},
-    {"x": 0.0, "y": 0.0, "element": "C"},
-    {"x": 0.0, "y": -1.5, "element": "H"}
+    { "x": -3.348, "y": -0.75, "element": "C" },
+    { "x": -2.049, "y": -1.5, "element": "C" },
+    { "x": -0.75, "y": -0.75, "element": "C" },
+    { "x": -0.75, "y": 0.75, "element": "C" },
+    { "x": -2.049, "y": 1.5, "element": "C" },
+    { "x": -3.348, "y": 0.75, "element": "C" },
+    { "x": 0.75, "y": 0.75, "element": "C" },
+    { "x": 2.049, "y": 1.5, "element": "C" },
+    { "x": 3.348, "y": 0.75, "element": "C" },
+    { "x": 3.348, "y": -0.75, "element": "C" },
+    { "x": 2.049, "y": -1.5, "element": "C" },
+    { "x": 0.75, "y": -0.75, "element": "C" },
+    { "x": -4.647, "y": -1.5, "element": "H" },
+    { "x": -2.049, "y": -3.0, "element": "H" },
+    { "x": -2.049, "y": 3.0, "element": "H" },
+    { "x": -4.647, "y": 1.5, "element": "H" },
+    { "x": 2.049, "y": 3.0, "element": "H" },
+    { "x": 4.647, "y": 1.5, "element": "H" },
+    { "x": 4.647, "y": -1.5, "element": "H" },
+    { "x": 2.049, "y": -3.0, "element": "H" }
   ],
-  "bonds": 
-    {"source": 3, "sink": 0, "bond": "SINGLE"},
-    {"source": 3, "sink": 1, "bond": "SINGLE"},
-    {"source": 3, "sink": 2, "bond": "SINGLE"},
-    {"source": 3, "sink": 4, "bond": "SINGLE"}
+  "bonds": [
+    { "atoms": [3, 6], "bond": "UNIMPL" },
+    { "atoms": [11, 2], "bond": "SINGLE" },
+    { "atoms": [0, 12], "bond": "SINGLE" },
+    { "atoms": [1, 13], "bond": "SINGLE" },
+    { "atoms": [4, 14], "bond": "SINGLE" },
+    { "atoms": [5, 15], "bond": "SINGLE" },
+    { "atoms": [7, 16], "bond": "SINGLE" },
+    { "atoms": [8, 17], "bond": "SINGLE" },
+    { "atoms": [9, 18], "bond": "SINGLE" },
+    { "atoms": [10, 19], "bond": "SINGLE" },
+    { "atoms": [0, 1, 2, 3, 4, 5], "bond": "AROMATIC" },
+    { "atoms": [6, 7, 8, 9, 10, 11], "bond": "AROMATIC" }
   ]
 };
 
 export const ViewAMolecule = () => <Molecule molecule={mol} />;
 ```
+
+This is rendered as:
+
+![Biphenylene](images/biphenylene.png)
 
 ## Component Attributes
 
