@@ -30,7 +30,7 @@ describe("Molecule component", () => {
         { x: 0, y: 0, element: "C" },
         { x: 10, y: 10, element: "C" },
       ],
-      bonds: [{ atoms: [0, 1], bond: "SINGLE" }],
+      bonds: [{ atoms: [[0, 1, "SINGLE"]] }],
     };
     const { container } = render(<Molecule molecule={data} />);
 
@@ -49,7 +49,45 @@ describe("Molecule component", () => {
         { x: 0, y: 0, element: "Cl" },
         { x: 10, y: 10, element: "Cl" },
       ],
-      bonds: [{ atoms: [0, 1], bond: "DOUBLE" }],
+      bonds: [{ atoms: [[0, 1, "DOUBLE"]] }],
+    };
+    const { container } = render(<Molecule molecule={data} />);
+
+    // chlorine atom labels should  displayed
+    expect(screen.queryAllByText("Cl")).toHaveLength(2);
+
+    // The lines
+    expect(container.querySelectorAll("line")).toHaveLength(2);
+  });
+
+  test("Display a triple bond", () => {
+    const data: MoleculeData = {
+      width: 10,
+      height: 10,
+      atoms: [
+        { x: 0, y: 0, element: "Cl" },
+        { x: 10, y: 10, element: "Cl" },
+      ],
+      bonds: [{ atoms: [[0, 1, "TRIPLE"]] }],
+    };
+    const { container } = render(<Molecule molecule={data} />);
+
+    // chlorine atom labels should  displayed
+    expect(screen.queryAllByText("Cl")).toHaveLength(2);
+
+    // The lines
+    expect(container.querySelectorAll("line")).toHaveLength(3);
+  });
+
+  test("Display an EitherDouble bond", () => {
+    const data: MoleculeData = {
+      width: 10,
+      height: 10,
+      atoms: [
+        { x: 0, y: 0, element: "Cl" },
+        { x: 10, y: 10, element: "Cl" },
+      ],
+      bonds: [{ atoms: [[0, 1, "DOUBLE"]], direction: "EITHERDOUBLE" }],
     };
     const { container } = render(<Molecule molecule={data} />);
 
@@ -68,7 +106,7 @@ describe("Molecule component", () => {
         { x: 0, y: 0, element: "Cl" },
         { x: 10, y: 10, element: "H" },
       ],
-      bonds: [{ atoms: [0, 1], bond: "SINGLE", direction: "BEGINWEDGE" }],
+      bonds: [{ atoms: [[0, 1, "SINGLE"]], direction: "BEGINWEDGE" }],
     };
     const { container } = render(<Molecule molecule={data} />);
 
@@ -88,7 +126,7 @@ describe("Molecule component", () => {
         { x: 0, y: 0, element: "Cl" },
         { x: 10, y: 10, element: "C" },
       ],
-      bonds: [{ atoms: [0, 1], bond: "SINGLE", direction: "BEGINWEDGE" }],
+      bonds: [{ atoms: [[0, 1, "SINGLE"]], direction: "BEGINWEDGE" }],
     };
     const { container } = render(<Molecule molecule={data} />);
 
@@ -108,7 +146,7 @@ describe("Molecule component", () => {
         { x: 0, y: 0, element: "Cl" },
         { x: 5, y: 5, element: "H" },
       ],
-      bonds: [{ atoms: [0, 1], bond: "SINGLE", direction: "BEGINDASH" }],
+      bonds: [{ atoms: [[0, 1, "SINGLE"]], direction: "BEGINDASH" }],
     };
     const { container } = render(<Molecule molecule={data} />);
 
@@ -128,7 +166,7 @@ describe("Molecule component", () => {
         { x: 0, y: 0, element: "Cl" },
         { x: 5, y: 5, element: "C" },
       ],
-      bonds: [{ atoms: [0, 1], bond: "SINGLE", direction: "BEGINDASH" }],
+      bonds: [{ atoms: [[0, 1, "SINGLE"]], direction: "BEGINDASH" }],
     };
     const { container } = render(<Molecule molecule={data} />);
 
@@ -152,7 +190,19 @@ describe("Molecule component", () => {
         { x: 0, y: 2, element: "F" },
         { x: 0, y: 1, element: "F" },
       ],
-      bonds: [{ atoms: [0, 1, 2, 3, 4, 5], bond: "AROMATIC" }],
+      bonds: [
+        {
+          atoms: [
+            [0, 1, "SINGLE"],
+            [1, 2, "DOUBLE"],
+            [2, 3, "SINGLE"],
+            [3, 4, "DOUBLE"],
+            [4, 5, "SINGLE"],
+            [5, 1, "DOUBLE"],
+          ],
+          tag: "RING",
+        },
+      ],
     };
     const { container } = render(<Molecule molecule={data} />);
 
@@ -168,7 +218,7 @@ describe("Molecule component", () => {
       width: 10,
       height: 10,
       atoms: [{ x: 5, y: 5, element: "A" }],
-      bonds: [{ atoms: [], bond: "AROMATIC" }],
+      bonds: [{ atoms: [], tag: "RING" }],
     };
 
     const { container } = render(<Molecule molecule={data} />);
@@ -185,7 +235,7 @@ describe("Molecule component", () => {
         { x: 0, y: 0, element: "Cl" },
         { x: 5, y: 5, element: "H" },
       ],
-      bonds: [{ atoms: [0, 1], bond: "UNSPECIFIED" }],
+      bonds: [{ atoms: [[0, 1, "UNSPECIFIED"]] }],
     };
     render(<Molecule molecule={data} />);
 

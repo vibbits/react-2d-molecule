@@ -6,7 +6,7 @@ export type BondVariant =
   | "UNSPECIFIED"
   | "SINGLE"
   | "DOUBLE"
-  | "TRIPPLE"
+  | "TRIPLE"
   | "QUADRUPLE"
   | "QUINTUPLE"
   | "HEXTUPLE"
@@ -354,7 +354,13 @@ const Bonds: React.FC<{ molecule: MoleculeData }> = ({ molecule }) => {
                     <TripleBond key={`triplebond-${i}`} source={f} sink={t} />
                   );
                 case "DOUBLE-EITHERDOUBLE":
-                  return <EitherDoubleBond source={f} sink={t} />;
+                  return (
+                    <EitherDoubleBond
+                      key={`eitherdouble-${i}`}
+                      source={f}
+                      sink={t}
+                    />
+                  );
                 default:
                   return (
                     <UnimplementedBond
