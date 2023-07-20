@@ -2,7 +2,7 @@ import React from "react";
 
 import * as V from "./vector";
 
-type BondVariant =
+export type BondVariant =
   | "UNSPECIFIED"
   | "SINGLE"
   | "DOUBLE"
@@ -26,21 +26,19 @@ type BondVariant =
   | "OTHER"
   | "ZERO";
 
-type BondDirection =
+export type BondDirection =
   | "BEGINWEDGE"
   | "BEGINDASH"
-  | "ENDDOWNRIGHT"
-  | "ENDUPRIGHT"
   | "EITHERDOUBLE"
   | "UNKNOWN";
 
-type Bond = {
-  atoms: number[];
-  bond: BondVariant;
+export type Bond = {
+  atoms: Array<[number, number, BondVariant]>;
   direction?: BondDirection;
+  tag?: "RING";
 };
 
-type Atom = {
+export type Atom = {
   x: number;
   y: number;
   element: string;
@@ -65,6 +63,7 @@ const SingleBond: React.FC<{ source: Atom; sink: Atom }> = ({
     y2={sink.y}
     stroke="black"
     strokeWidth="0.05"
+    strokeLinecap="round"
   />
 );
 
@@ -84,6 +83,7 @@ const DoubleBond: React.FC<{ source: Atom; sink: Atom }> = ({
         y2={sink.y + dx}
         stroke="black"
         strokeWidth="0.05"
+        strokeLinecap="round"
       />
       <line
         x1={source.x + dy}
@@ -92,6 +92,80 @@ const DoubleBond: React.FC<{ source: Atom; sink: Atom }> = ({
         y2={sink.y - dx}
         stroke="black"
         strokeWidth="0.05"
+        strokeLinecap="round"
+      />
+    </g>
+  );
+};
+
+const TripleBond: React.FC<{ source: Atom; sink: Atom }> = ({
+  source,
+  sink,
+}) => {
+  const dx = (sink.x - source.x) * 0.05;
+  const dy = (sink.y - source.y) * 0.05;
+
+  return (
+    <g>
+      <line
+        x1={source.x}
+        x2={sink.x}
+        y1={source.y}
+        y2={sink.y}
+        stroke="black"
+        strokeWidth="0.05"
+        strokeLinecap="round"
+      />
+      <line
+        x1={source.x - dy}
+        y1={source.y + dx}
+        x2={sink.x - dy}
+        y2={sink.y + dx}
+        stroke="black"
+        strokeWidth="0.05"
+        strokeLinecap="round"
+      />
+      <line
+        x1={source.x + dy}
+        y1={source.y - dx}
+        x2={sink.x + dy}
+        y2={sink.y - dx}
+        stroke="black"
+        strokeWidth="0.05"
+        strokeLinecap="round"
+      />
+    </g>
+  );
+};
+
+const EitherDoubleBond: React.FC<{ source: Atom; sink: Atom }> = ({
+  source,
+  sink,
+}) => {
+  const dir = V.scale(V.sub(sink, source), 0.1);
+  const dx = (sink.x - source.x) * 0.1;
+  const dy = (sink.y - source.y) * 0.1;
+  const ep1 = V.sub({ x: sink.x - dy, y: sink.y + dx }, dir);
+  const ep2 = V.add({ x: source.x - dy, y: source.y + dx }, dir);
+  return (
+    <g>
+      <line
+        x1={source.x}
+        y1={source.y}
+        x2={ep1.x}
+        y2={ep1.y}
+        stroke="black"
+        strokeWidth="0.05"
+        strokeLinecap="round"
+      />
+      <line
+        x1={sink.x}
+        y1={sink.y}
+        x2={ep2.x}
+        y2={ep2.y}
+        stroke="black"
+        strokeWidth="0.05"
+        strokeLinecap="round"
       />
     </g>
   );
@@ -173,42 +247,36 @@ const InsetBond: React.FC<{ source: Atom; sink: Atom; centre: V.Vector }> = ({
       y2={b.y}
       stroke="black"
       strokeWidth="0.05"
+      strokeLinecap="round"
     />
   );
 };
 
-const Aromatic: React.FC<{ bond: string; atoms: Atom[] }> = ({
-  bond,
-  atoms,
-}) => {
-  // rotate atoms left then zip
-  const rotateLeft: <T>(xs: Array<T>) => Array<T> = (xs) => {
-    if (xs.length > 0) {
-      let xs2 = xs.slice();
-      xs2.push(xs2.shift()!);
-      return xs2;
-    } else {
-      return xs;
-    }
-  };
-
+const Ring: React.FC<{
+  bond: string;
+  atoms: Array<[Atom, Atom, BondVariant]>;
+}> = ({ bond, atoms }) => {
   return (
     <g>
-      {rotateLeft(atoms).map((atom, i) => {
-        if (i % 2 == 0) {
+      {atoms.map(([source, sink, variant], i) => {
+        if (variant === "DOUBLE") {
           return (
-            <g key={`${bond}-${i}`}>
-              <SingleBond source={atoms[i]!} sink={atom} />
+            <g key={`${bond}-double-${i}`}>
+              <SingleBond source={source} sink={sink} />
               <InsetBond
-                source={atoms[i]!}
-                sink={atom}
-                centre={V.mean(atoms)}
+                source={source}
+                sink={sink}
+                centre={V.mean(atoms.flatMap((x) => [x[0], x[1]]))}
               />
             </g>
           );
         } else {
           return (
-            <SingleBond key={`${bond}-${i}`} source={atoms[i]!} sink={atom} />
+            <SingleBond
+              key={`${bond}-single-${i}`}
+              source={source}
+              sink={sink}
+            />
           );
         }
       })}
@@ -239,60 +307,66 @@ const Bonds: React.FC<{ molecule: MoleculeData }> = ({ molecule }) => {
   return (
     <>
       {molecule.bonds.map((bond: Bond, i: number) => {
-        const descr = `${bond.bond}-${bond.direction ? bond.direction : ""}`;
-        switch (descr) {
-          case "SINGLE-":
-          case "SINGLE-ENDUPRIGHT":
-          case "SINGLE-ENDDOWNRIGHT":
-            return (
-              <SingleBond
-                key={`singlebond-${i}`}
-                source={molecule.atoms[bond.atoms[0]!] as Atom}
-                sink={molecule.atoms[bond.atoms[1]!] as Atom}
-              />
-            );
-          case "SINGLE-BEGINWEDGE":
-            return (
-              <Wedge
-                key={`wedge${i}`}
-                source={molecule.atoms[bond.atoms[0]!] as Atom}
-                sink={molecule.atoms[bond.atoms[1]!] as Atom}
-              />
-            );
-          case "SINGLE-BEGINDASH":
-            return (
-              <Dash
-                key={`dash-${i}`}
-                bond={`dash-${i}`}
-                source={molecule.atoms[bond.atoms[0]!] as Atom}
-                sink={molecule.atoms[bond.atoms[1]!] as Atom}
-              />
-            );
-          case "DOUBLE-":
-            return (
-              <DoubleBond
-                key={`doublebond-${i}`}
-                source={molecule.atoms[bond.atoms[0]!] as Atom}
-                sink={molecule.atoms[bond.atoms[1]!] as Atom}
-              />
-            );
-          case "AROMATIC-":
-            return (
-              <Aromatic
-                key={`aromatic-${i}`}
-                bond={`aromatic-${i}`}
-                atoms={bond.atoms.map((i) => molecule.atoms[i] as Atom)}
-              />
-            );
-          default:
-            return (
-              <UnimplementedBond
-                key={`unimplbond-${i}`}
-                source={molecule.atoms[bond.atoms[0]!] as Atom}
-                sink={molecule.atoms[bond.atoms[1]!] as Atom}
-                name={descr}
-              />
-            );
+        if (bond.tag === "RING") {
+          return (
+            <Ring
+              key={`ring-${i}`}
+              bond={`ring-${i}`}
+              atoms={bond.atoms.map(
+                ([f, t, v]: [number, number, BondVariant]) => [
+                  molecule.atoms[f]!,
+                  molecule.atoms[t]!,
+                  v,
+                ],
+              )}
+            />
+          );
+        } else {
+          return bond.atoms.flatMap(
+            ([source, sink, bondType]: [number, number, BondVariant]) => {
+              const descr = `${bondType}-${
+                bond.direction ? bond.direction : ""
+              }`;
+              const f: Atom = molecule.atoms[source]!;
+              const t: Atom = molecule.atoms[sink]!;
+              switch (descr) {
+                case "SINGLE-":
+                  return (
+                    <SingleBond key={`singlebond-${i}`} source={f} sink={t} />
+                  );
+                case "SINGLE-BEGINWEDGE":
+                  return <Wedge key={`wedge${i}`} source={f} sink={t} />;
+                case "SINGLE-BEGINDASH":
+                  return (
+                    <Dash
+                      key={`dash-${i}`}
+                      bond={`dash-${i}`}
+                      source={f}
+                      sink={t}
+                    />
+                  );
+                case "DOUBLE-":
+                  return (
+                    <DoubleBond key={`doublebond-${i}`} source={f} sink={t} />
+                  );
+                case "TRIPLE-":
+                  return (
+                    <TripleBond key={`triplebond-${i}`} source={f} sink={t} />
+                  );
+                case "DOUBLE-EITHERDOUBLE":
+                  return <EitherDoubleBond source={f} sink={t} />;
+                default:
+                  return (
+                    <UnimplementedBond
+                      key={`unimplbond-${i}`}
+                      source={f}
+                      sink={t}
+                      name={descr}
+                    />
+                  );
+              }
+            },
+          );
         }
       })}
     </>
@@ -306,9 +380,12 @@ type MoleculeProps = {
   translateX?: number;
   translateY?: number;
   scale?: number;
+  width?: number;
+  height?: number;
   labelTranslateX?: number;
   labelTranslateY?: number;
   atomClicked?: (_index: number) => void;
+  atomLabel?: (_atom: Atom, _index: number) => string;
   atomStyle?: (_element: string, _selected: boolean) => React.CSSProperties;
   atomLabelStyle?: (
     _element: string,
@@ -317,21 +394,24 @@ type MoleculeProps = {
 };
 
 export const Molecule: React.FC<MoleculeProps> = (props: MoleculeProps) => {
-  const min_x = props.molecule.atoms
-    .map((a: Atom) => a.x)
-    .reduce((acc: number, v: number) => Math.min(acc, v), Infinity);
-  const min_y = props.molecule.atoms
-    .map((a: Atom) => a.y)
-    .reduce((acc: number, v: number) => Math.min(acc, v), Infinity);
+  const [min_x, min_y] = props.molecule.atoms
+    .map((a: Atom): [number, number] => [a.x, a.y])
+    .reduce(
+      ([acc_x, acc_y]: [number, number], [v_x, v_y]: [number, number]) => [
+        Math.min(acc_x, v_x),
+        Math.min(acc_y, v_y),
+      ],
+      [Infinity, Infinity],
+    );
 
   const translateX =
-    -Math.min(min_x, 0) +
-    //ATOM_RADIUS +
-    (props.translateX || 0) * props.molecule.width;
+    -(Math.min(min_x, 0) - ATOM_RADIUS) + (props.translateX || 0);
   const translateY =
-    -Math.min(min_y, 0) +
-    //ATOM_RADIUS +
-    (props.translateY || 0) * props.molecule.height;
+    -(Math.min(min_y, 0) - ATOM_RADIUS) + (props.translateY || 0);
+
+  const defaultAtomLabel = (atom: Atom, _index: number): React.ReactElement => (
+    <>{atom.element}</>
+  );
 
   const defaultAtomStyle = (
     element: string,
@@ -351,21 +431,26 @@ export const Molecule: React.FC<MoleculeProps> = (props: MoleculeProps) => {
   const defaultAtomClicked = (_index: number) => {};
 
   const atomClicked = props.atomClicked ?? defaultAtomClicked;
+  const atomLabel = props.atomLabel ?? defaultAtomLabel;
   const atomStyle = props.atomStyle ?? defaultAtomStyle;
   const atomLabelStyle = props.atomLabelStyle ?? defaultAtomLabelStyle;
+  const parentAspectRatio = (props.width || 1) / (props.height || 1);
+  const width = props.molecule.width + 2 * ATOM_RADIUS;
+  const height = (props.molecule.width + 2 * ATOM_RADIUS) / parentAspectRatio;
+  const scale =
+    props.scale ||
+    Math.min(height / (props.molecule.height + 2 * ATOM_RADIUS), 1);
 
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox={`0 0 ${Math.ceil(props.molecule.width)} ${Math.ceil(
-        props.molecule.height,
-      )}`}
+      viewBox={`0 0 ${width} ${height}`}
       style={{ pointerEvents: "none" }}
     >
       <g
-        transform={`translate(${translateX}, ${translateY}) scale(${
-          props.scale || 1
-        } ${props.scale || 1})`}
+        transform={`translate(${scale * translateX}, ${
+          scale * translateY
+        }) scale(${scale} ${scale})`}
       >
         <Bonds molecule={props.molecule} />
         {props.molecule.atoms.map((atom: Atom, i: number) => (
@@ -389,7 +474,7 @@ export const Molecule: React.FC<MoleculeProps> = (props: MoleculeProps) => {
               textAnchor="middle"
               style={atomLabelStyle(atom.element, !!atom.selected)}
             >
-              {atom.element}
+              {atomLabel(atom, i)}
             </text>
           </g>
         ))}

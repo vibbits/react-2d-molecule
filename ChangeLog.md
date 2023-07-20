@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2023-07-20
+
+### Added
+
+- Support for more bond types.
+- Adjust input structure in an incompatible way to more easily render bonds that are related.
+
 ## [2.0.0] - 2023-06-05
 
 ### Added
@@ -34,7 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release
 
-[unreleased]: https://github.com/vibbits/react-2d-molecule/compare/v2.0.0...HEAD
+[unreleased]: https://github.com/vibbits/react-2d-molecule/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/vibbits/react-2d-molecule/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/vibbits/react-2d-molecule/compare/v1.0.2...v2.0.0
 [1.0.2]: https://github.com/vibbits/react-2d-molecule/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/vibbits/react-2d-molecule/compare/v1.0.0...v1.0.1
