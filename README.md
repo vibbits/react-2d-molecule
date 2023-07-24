@@ -54,18 +54,28 @@ const mol = {
     { "x": 2.049, "y": -3.0, "element": "H" }
   ],
   "bonds": [
-    { "atoms": [3, 6], "bond": "UNIMPL" },
-    { "atoms": [11, 2], "bond": "SINGLE" },
-    { "atoms": [0, 12], "bond": "SINGLE" },
-    { "atoms": [1, 13], "bond": "SINGLE" },
-    { "atoms": [4, 14], "bond": "SINGLE" },
-    { "atoms": [5, 15], "bond": "SINGLE" },
-    { "atoms": [7, 16], "bond": "SINGLE" },
-    { "atoms": [8, 17], "bond": "SINGLE" },
-    { "atoms": [9, 18], "bond": "SINGLE" },
-    { "atoms": [10, 19], "bond": "SINGLE" },
-    { "atoms": [0, 1, 2, 3, 4, 5], "bond": "AROMATIC" },
-    { "atoms": [6, 7, 8, 9, 10, 11], "bond": "AROMATIC" }
+    { "atoms": [[3, 6, "UNIMPL" ]] },
+    { "atoms": [[11, 2, "SINGLE"]] },
+    { "atoms": [[0, 12, "SINGLE"]] },
+    { "atoms": [[1, 13, "SINGLE"]] },
+    { "atoms": [[4, 14, "SINGLE"]] },
+    { "atoms": [[5, 15, "SINGLE"]] },
+    { "atoms": [[7, 16, "SINGLE"]] },
+    { "atoms": [[8, 17, "SINGLE"]] },
+    { "atoms": [[9, 18, "SINGLE"]] },
+    { "atoms": [[10, 19, "SINGLE"]] },
+    { "atoms": [[0, 1, "SINGLE"],
+                [1, 2, "DOUBLE"],
+                [2, 3, "SINGLE"],
+                [3, 4, "DOUBLE"],
+                [4, 5, "SINGLE"],
+                [5, 0, "DOUBLE"]], "key": "RING" },
+    { "atoms": [[6, 7, "SINGLE"],
+                [7, 8, "DOUBLE"],
+                [8, 9, "SINGLE"],
+                [9, 10, "DOUBLE"],
+                [10, 11, "SINGLE"],
+                [11, 6, "DOUBLE"]], "key": "RING" }
   ]
 };
 
@@ -87,7 +97,12 @@ This is rendered as:
 * `translateX: number` Translate the whole image on the X axis (default: `0`).
 * `translateY: number` Translate the whole image on the Y axis (default: `0`).
 * `scale: number` Scale the whole image by some fraction (default: `1`).
+* `width: number` The width of the drawing area in pixels (default: `100`).
+* `height: number` The height of the drawing area in pixels (default: `100`).
+* `labelTranslateX: number` Translate each atom label, in the x direction, by this number of pixels (default: `0`).
+* `labelTranslateY: number` Translate each atom label, in the y direction, by this number of pixels (default: `0`).
 * `atomClicked: (index: number) => void` A callback function accepting the index of the clicked atom.
+* `atomLabel: (atom: Atom, index: number) => string` A callback function defining the text to display in the label for the given atom.
 * `atomStyle: (element: string, selected: boolean): React.CSSProperties` A hook specifying CSS styles for the SVG `<circle>`.
 * `atomLabelStyle: (element: string, selected: boolean): React.CSSProperties` A hook specifying CSS styles for the SVG `<text>`.
 
