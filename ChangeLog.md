@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.2] - 2023-07-24
+
+### Fixed
+
+- Added width and height attributes to the parent svg element so that it isn't rendered with zero size
+
 ## [3.0.1] - 2023-07-20
 
 ### Fixed
@@ -48,7 +54,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release
 
-[unreleased]: https://github.com/vibbits/react-2d-molecule/compare/v3.0.1...HEAD
+[unreleased]: https://github.com/vibbits/react-2d-molecule/compare/v3.0.2...HEAD
+[3.0.2]: https://github.com/vibbits/react-2d-molecule/compare/v3.0.1...v3.0.2
 [3.0.1]: https://github.com/vibbits/react-2d-molecule/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/vibbits/react-2d-molecule/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/vibbits/react-2d-molecule/compare/v1.0.2...v2.0.0
