@@ -1,6 +1,6 @@
 {
   "name": "@vibbioinfocore/react-2d-molecule",
-  "version": "3.0.2",
+  "version": "3.1.0",
   "description": "A React component to display molecule structures in a 2D SVG",
   "browser": "dist/index.js",
   "main": "./dist/index.js",

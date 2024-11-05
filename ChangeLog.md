@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.0] - 2024-11-05
+
+### Changed
+
+- The `atomStyle` and `atomLabelStyle` callbacks take an integer argument rather than a boolean
+  indicating whether they're selected or not. react-2d-molecule no longer tracks if an atom is
+  "selected".
+
 ## [3.0.2] - 2023-07-24
 
 ### Fixed
@@ -54,7 +62,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release
 
-[unreleased]: https://github.com/vibbits/react-2d-molecule/compare/v3.0.2...HEAD
+[unreleased]: https://github.com/vibbits/react-2d-molecule/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/vibbits/react-2d-molecule/compare/v3.0.2...v3.1.0
 [3.0.2]: https://github.com/vibbits/react-2d-molecule/compare/v3.0.1...v3.0.2
 [3.0.1]: https://github.com/vibbits/react-2d-molecule/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/vibbits/react-2d-molecule/compare/v2.0.0...v3.0.0

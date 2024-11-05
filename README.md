@@ -103,8 +103,8 @@ This is rendered as:
 * `labelTranslateY: number` Translate each atom label, in the y direction, by this number of pixels (default: `0`).
 * `atomClicked: (index: number) => void` A callback function accepting the index of the clicked atom.
 * `atomLabel: (atom: Atom, index: number) => string` A callback function defining the text to display in the label for the given atom.
-* `atomStyle: (element: string, selected: boolean): React.CSSProperties` A hook specifying CSS styles for the SVG `<circle>`.
-* `atomLabelStyle: (element: string, selected: boolean): React.CSSProperties` A hook specifying CSS styles for the SVG `<text>`.
+* `atomStyle: (element: string, index: number): React.CSSProperties` A hook specifying CSS styles for the SVG `<circle>`.
+* `atomLabelStyle: (element: string, index: number): React.CSSProperties` A hook specifying CSS styles for the SVG `<text>`.
 
 ## Contributing
 
