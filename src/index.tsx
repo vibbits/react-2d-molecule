@@ -42,7 +42,6 @@ export type Atom = {
   x: number;
   y: number;
   element: string;
-  selected?: boolean;
 };
 
 export type MoleculeData = {
@@ -392,11 +391,8 @@ type MoleculeProps = {
   labelTranslateY?: number;
   atomClicked?: (_index: number) => void;
   atomLabel?: (_atom: Atom, _index: number) => string;
-  atomStyle?: (_element: string, _selected: boolean) => React.CSSProperties;
-  atomLabelStyle?: (
-    _element: string,
-    _selected: boolean,
-  ) => React.CSSProperties;
+  atomStyle?: (_element: string, _index: number) => React.CSSProperties;
+  atomLabelStyle?: (_element: string, _index: number) => React.CSSProperties;
 };
 
 export const Molecule: React.FC<MoleculeProps> = (props: MoleculeProps) => {
@@ -416,12 +412,12 @@ export const Molecule: React.FC<MoleculeProps> = (props: MoleculeProps) => {
     -(Math.min(min_y, 0) - ATOM_RADIUS) + (props.translateY || 0);
 
   const defaultAtomLabel = (atom: Atom, _index: number): React.ReactElement => (
-    <>{atom.element}</>
+    <>{atom.element.toString()}</>
   );
 
   const defaultAtomStyle = (
     element: string,
-    _selected: boolean,
+    _index: number,
   ): React.CSSProperties => ({
     fill: element === "C" ? "rgba(1, 1, 1, 0)" : "white",
     stroke: element === "C" ? "rgba(1, 1, 1, 0)" : "white",
@@ -429,7 +425,7 @@ export const Molecule: React.FC<MoleculeProps> = (props: MoleculeProps) => {
 
   const defaultAtomLabelStyle = (
     element: string,
-    _selected: boolean,
+    _index: number,
   ): React.CSSProperties => ({
     fill: element === "C" ? "rgba(0,0,0,0)" : "black",
   });
@@ -473,14 +469,14 @@ export const Molecule: React.FC<MoleculeProps> = (props: MoleculeProps) => {
               cy={atom.y}
               r={ATOM_RADIUS}
               strokeWidth="0.02"
-              style={atomStyle(atom.element, !!atom.selected)}
+              style={atomStyle(atom.element, i)}
             />
             <text
               key={`label-${i}`}
               x={atom.x + (props.labelTranslateX || 0)}
               y={atom.y + (props.labelTranslateY || 0.25)}
               textAnchor="middle"
-              style={atomLabelStyle(atom.element, !!atom.selected)}
+              style={atomLabelStyle(atom.element, i)}
             >
               {atomLabel(atom, i)}
             </text>
